@@ -1,11 +1,9 @@
 #ifndef NGLSCENE_H_
 #define NGLSCENE_H_
-#include <ngl/Camera.h>
-#include <ngl/Colour.h>
-#include <ngl/Light.h>
+#include <QOpenGLWindow>
+#include <ngl/Mat4.h>
 #include <ngl/Transformation.h>
 #include <ngl/Text.h>
-#include <QOpenGLWindow>
 #include "WindowParams.h"
 #include <memory>
 
@@ -56,7 +54,8 @@ private:
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief Our Camera
     //----------------------------------------------------------------------------------------------------------------------
-    ngl::Camera m_cam;
+    ngl::Mat4 m_view;
+    ngl::Mat4 m_project;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief transformation stack for the gl transformations etc
     //----------------------------------------------------------------------------------------------------------------------
@@ -116,7 +115,8 @@ private:
     //----------------------------------------------------------------------------------------------------------------------
 
     void timerEvent(QTimerEvent *);
-
+    enum class Material : int {GOLD,BRASS,PEWTER};
+    void setMaterial(const Material &_m);
 };
 
 

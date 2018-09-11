@@ -6,7 +6,7 @@ in vec3 fragmentNormal;
 layout(location=0)out vec4 fragColour;
 
 /// @brief material structure
-struct Materials
+struct Material
 {
 	vec4 ambient;
 	vec4 diffuse;
@@ -21,13 +21,9 @@ struct Lights
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-	 float constantAttenuation;
-	float spotCosCutoff;
-	float quadraticAttenuation;
-	float linearAttenuation;
 };
 // @param material passed from our program
-uniform Materials material;
+uniform Material material;
 
 uniform Lights light;
 in vec3 lightDir;
