@@ -33,33 +33,30 @@ void NGLScene::initializeGL()
 {
   // we must call this first before any other GL commands to load and link the
   // gl commands from the lib, if this is not done program will crash
-  ngl::NGLInit::instance();
+  ngl::NGLInit::initialize();
 
   glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
   glEnable(GL_MULTISAMPLE);
-  // now to load the shader and set the values
-  // grab an instance of shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   // we are creating a shader called Phong
-  shader->createShaderProgram("Phong");
+  ngl::ShaderLib::createShaderProgram("Phong");
   // now we are going to create empty shaders for Frag and Vert
-  shader->attachShader("PhongVertex",ngl::ShaderType::VERTEX);
-  shader->attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
+  ngl::ShaderLib::attachShader("PhongVertex",ngl::ShaderType::VERTEX);
+  ngl::ShaderLib::attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
   // attach the source
-  shader->loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
-  shader->loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
+  ngl::ShaderLib::loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
+  ngl::ShaderLib::loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
   // compile the shaders
-  shader->compileShader("PhongVertex");
-  shader->compileShader("PhongFragment");
+  ngl::ShaderLib::compileShader("PhongVertex");
+  ngl::ShaderLib::compileShader("PhongFragment");
   // add them to the program
-  shader->attachShaderToProgram("Phong","PhongVertex");
-  shader->attachShaderToProgram("Phong","PhongFragment");
+  ngl::ShaderLib::attachShaderToProgram("Phong","PhongVertex");
+  ngl::ShaderLib::attachShaderToProgram("Phong","PhongFragment");
   // now we have associated this data we can link the shader
-  shader->linkProgramObject("Phong");
-  shader->use("Phong");
+  ngl::ShaderLib::linkProgramObject("Phong");
+  ngl::ShaderLib::use("Phong");
   // Now we will create a basic Camera from the graphics library
   // This is a static camera so it only needs to be set once
   // First create Values for the camera position
@@ -71,20 +68,20 @@ void NGLScene::initializeGL()
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
   m_project=ngl::perspective(45.0f,static_cast<float>(width())/height(),0.05f,350.0f);
-  shader->setUniform("viewerPos",from);
+  ngl::ShaderLib::setUniform("viewerPos",from);
 
   ngl::Vec4 lightPos(2.0f,5.0f,2.0f,0.0f);
-  shader->setUniform("light.position",lightPos);
-  shader->setUniform("light.ambient",0.2f,0.2f,0.2f,1.0f);
-  shader->setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
-  shader->setUniform("light.specular",0.8f,0.8f,0.8f,1.0f);
+  ngl::ShaderLib::setUniform("light.position",lightPos);
+  ngl::ShaderLib::setUniform("light.ambient",0.2f,0.2f,0.2f,1.0f);
+  ngl::ShaderLib::setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
+  ngl::ShaderLib::setUniform("light.specular",0.8f,0.8f,0.8f,1.0f);
   // gold like phong material
-  shader->setUniform("material.ambient",0.274725f,0.1995f,0.0745f,0.0f);
-  shader->setUniform("material.diffuse",0.75164f,0.60648f,0.22648f,0.0f);
-  shader->setUniform("material.specular",0.628281f,0.555802f,0.3666065f,0.0f);
-  shader->setUniform("material.shininess",51.2f);
+  ngl::ShaderLib::setUniform("material.ambient",0.274725f,0.1995f,0.0745f,0.0f);
+  ngl::ShaderLib::setUniform("material.diffuse",0.75164f,0.60648f,0.22648f,0.0f);
+  ngl::ShaderLib::setUniform("material.specular",0.628281f,0.555802f,0.3666065f,0.0f);
+  ngl::ShaderLib::setUniform("material.shininess",51.2f);
 
-  m_text.reset( new ngl::Text(QFont("Arial",16)));
+  m_text=std::make_unique< ngl::Text>("fonts/Arial.ttf",16);
   m_text->setColour(1,1,1);
   m_text->setScreenSize(width(),height());
   startTimer(20);
@@ -94,8 +91,7 @@ void NGLScene::initializeGL()
 
 void NGLScene::loadMatricesToShader()
 {
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->use("Phong");
+  ngl::ShaderLib::use("Phong");
   ngl::Mat4 MV;
   ngl::Mat4 MVP;
   ngl::Mat3 normalMatrix;
@@ -105,10 +101,10 @@ void NGLScene::loadMatricesToShader()
   MVP=m_project*MV;
   normalMatrix=MV;
   normalMatrix.inverse().transpose();
-  shader->setUniform("MV",MV);
-  shader->setUniform("MVP",MVP);
-  shader->setUniform("normalMatrix",normalMatrix);
-  shader->setUniform("M",M);
+  ngl::ShaderLib::setUniform("MV",MV);
+  ngl::ShaderLib::setUniform("MVP",MVP);
+  ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
+  ngl::ShaderLib::setUniform("M",M);
 }
 
 void NGLScene::paintGL()
@@ -116,23 +112,19 @@ void NGLScene::paintGL()
   // clear the screen and depth buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glViewport(0,0,m_win.width,m_win.height);
-  // grab an instance of the shader manager
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  (*shader)["Phong"]->use();
+  ngl::ShaderLib::use("Phong");
 
 
   static ngl::Vec3 start(-8,-5,0);
   static ngl::Vec3 end(8,5,0);
 
-   // get the VBO instance and draw the built in teapot
-  ngl::VAOPrimitives *prim=ngl::VAOPrimitives::instance();
   // draw
   ngl::Vec3 lpos=ngl::lerp(start,end,m_time);
   m_transform.setPosition(lpos);
   setMaterial(Material::GOLD);
 
   loadMatricesToShader();
-  prim->draw("teapot");
+  ngl::VAOPrimitives::draw("teapot");
 
 
   ngl::Vec3 tpos=ngl::trigInterp(start,end,m_time);
@@ -141,7 +133,7 @@ void NGLScene::paintGL()
   setMaterial(Material::PEWTER);
 
   loadMatricesToShader();
-  prim->draw("teapot");
+  ngl::VAOPrimitives::draw("teapot");
 
   ngl::Vec3  cpos=ngl::cubic(start,end,m_time);
   cpos.m_y=cpos.m_y-2.0f;
@@ -149,16 +141,16 @@ void NGLScene::paintGL()
   setMaterial(Material::BRASS);
 
   loadMatricesToShader();
-  prim->draw("teapot");
+  ngl::VAOPrimitives::draw("teapot");
 
   QString text=QString("T=%1").arg(m_time);
-  m_text->renderText(10,18,text );
-  text.sprintf("Trigonomic interpolation [%0.4f %0.4f %0.4f]",tpos.m_x,tpos.m_y,tpos.m_z);
-  m_text->renderText(10,40,text );
+  m_text->renderText(10,700,fmt::format("T={:0.2f}",m_time) );
+  m_text->renderText(10,680,fmt::format("Trigonomic interpolation [{:0.4f} {:0.4f} {:0.4f}]",tpos.m_x,tpos.m_y,tpos.m_z) );
   text.sprintf("Linear interpolation [%0.4f %0.4f %0.4f]",lpos.m_x,lpos.m_y,lpos.m_z);
-  m_text->renderText(10,60,text );
-  text.sprintf("Cubic interpolation [%0.4f %0.4f %0.4f]",cpos.m_x,cpos.m_y,cpos.m_z);
-  m_text->renderText(10,80,text );
+  m_text->renderText(10,660,fmt::format("Linear interpolation [{:0.4f} {:0.4f} {:0.4f}]",lpos.m_x,lpos.m_y,lpos.m_z) );
+
+  m_text->renderText(10,640,fmt::format("Cubic interpolation [{:0.4f} {:0.4f} {:0.4f}]",cpos.m_x,cpos.m_y,cpos.m_z) );
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -306,11 +298,10 @@ void NGLScene::setMaterial(const Material &_m)
     0.3333f,0.3333f,0.521569f,9.84615f} // Pewter
   };
   int i=static_cast<int>(_m);
-  ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  shader->use("Phong");
-  shader->setUniform("material.ambient",material[i][0],material[i][1],material[i][2],1.0f);
-  shader->setUniform("material.diffuse",material[i][3],material[i][4],material[i][5],1.0f);
-  shader->setUniform("material.specular",material[i][6],material[i][7],material[i][8],1.0f);
-  shader->setUniform("material.shininess",material[i][9]);
+  ngl::ShaderLib::use("Phong");
+  ngl::ShaderLib::setUniform("material.ambient",material[i][0],material[i][1],material[i][2],1.0f);
+  ngl::ShaderLib::setUniform("material.diffuse",material[i][3],material[i][4],material[i][5],1.0f);
+  ngl::ShaderLib::setUniform("material.specular",material[i][6],material[i][7],material[i][8],1.0f);
+  ngl::ShaderLib::setUniform("material.shininess",material[i][9]);
 
 }
