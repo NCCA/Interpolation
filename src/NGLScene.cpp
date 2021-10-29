@@ -146,7 +146,10 @@ void NGLScene::paintGL()
   QString text=QString("T=%1").arg(m_time);
   m_text->renderText(10,700,fmt::format("T={:0.2f}",m_time) );
   m_text->renderText(10,680,fmt::format("Trigonomic interpolation [{:0.4f} {:0.4f} {:0.4f}]",tpos.m_x,tpos.m_y,tpos.m_z) );
-  text.sprintf("Linear interpolation [%0.4f %0.4f %0.4f]",lpos.m_x,lpos.m_y,lpos.m_z);
+  // Note we can use QTextString to build string as well  
+  QTextStream(&text) << "Linear interpolation ["<<lpos.m_x<<','<<lpos.m_y<<','<<lpos.m_z<<']';
+  
+  
   m_text->renderText(10,660,fmt::format("Linear interpolation [{:0.4f} {:0.4f} {:0.4f}]",lpos.m_x,lpos.m_y,lpos.m_z) );
 
   m_text->renderText(10,640,fmt::format("Cubic interpolation [{:0.4f} {:0.4f} {:0.4f}]",cpos.m_x,cpos.m_y,cpos.m_z) );
@@ -224,11 +227,11 @@ void NGLScene::wheelEvent( QWheelEvent* _event )
 {
 
   // check the diff of the wheel position (0 means no change)
-  if ( _event->delta() > 0 )
+  if ( _event->angleDelta().x() > 0 )
   {
     m_modelPos.m_z += ZOOM;
   }
-  else if ( _event->delta() < 0 )
+  else if ( _event->angleDelta().x() < 0 )
   {
     m_modelPos.m_z -= ZOOM;
   }
