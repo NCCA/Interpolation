@@ -7,26 +7,23 @@
 #include <ngl/VAOPrimitives.h>
 #include <ngl/ShaderLib.h>
 
-
-
 NGLScene::NGLScene()
 {
   setTitle("Using the ngl::Util interpolation templates");
-  m_time=0;
-  m_animate=true;
+  m_time = 0;
+  m_animate = true;
 }
-
 
 NGLScene::~NGLScene()
 {
-  std::cout<<"Shutting down NGL, removing VAO's and Shaders\n";
+  std::cout << "Shutting down NGL, removing VAO's and Shaders\n";
 }
 
-void NGLScene::resizeGL( int _w, int _h )
+void NGLScene::resizeGL(int _w, int _h)
 {
-  m_project=ngl::perspective( 45.0f, static_cast<float>( _w ) / _h, 0.05f, 350.0f );
-  m_win.width  = static_cast<int>( _w * devicePixelRatio() );
-  m_win.height = static_cast<int>( _h * devicePixelRatio() );
+  m_project = ngl::perspective(45.0f, static_cast<float>(_w) / _h, 0.05f, 350.0f);
+  m_win.width = static_cast<int>(_w * devicePixelRatio());
+  m_win.height = static_cast<int>(_h * devicePixelRatio());
 }
 
 void NGLScene::initializeGL()
@@ -35,7 +32,7 @@ void NGLScene::initializeGL()
   // gl commands from the lib, if this is not done program will crash
   ngl::NGLInit::initialize();
 
-  glClearColor(0.4f, 0.4f, 0.4f, 1.0f);			   // Grey Background
+  glClearColor(0.4f, 0.4f, 0.4f, 1.0f); // Grey Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
@@ -43,51 +40,49 @@ void NGLScene::initializeGL()
   // we are creating a shader called Phong
   ngl::ShaderLib::createShaderProgram("Phong");
   // now we are going to create empty shaders for Frag and Vert
-  ngl::ShaderLib::attachShader("PhongVertex",ngl::ShaderType::VERTEX);
-  ngl::ShaderLib::attachShader("PhongFragment",ngl::ShaderType::FRAGMENT);
+  ngl::ShaderLib::attachShader("PhongVertex", ngl::ShaderType::VERTEX);
+  ngl::ShaderLib::attachShader("PhongFragment", ngl::ShaderType::FRAGMENT);
   // attach the source
-  ngl::ShaderLib::loadShaderSource("PhongVertex","shaders/PhongVertex.glsl");
-  ngl::ShaderLib::loadShaderSource("PhongFragment","shaders/PhongFragment.glsl");
+  ngl::ShaderLib::loadShaderSource("PhongVertex", "shaders/PhongVertex.glsl");
+  ngl::ShaderLib::loadShaderSource("PhongFragment", "shaders/PhongFragment.glsl");
   // compile the shaders
   ngl::ShaderLib::compileShader("PhongVertex");
   ngl::ShaderLib::compileShader("PhongFragment");
   // add them to the program
-  ngl::ShaderLib::attachShaderToProgram("Phong","PhongVertex");
-  ngl::ShaderLib::attachShaderToProgram("Phong","PhongFragment");
+  ngl::ShaderLib::attachShaderToProgram("Phong", "PhongVertex");
+  ngl::ShaderLib::attachShaderToProgram("Phong", "PhongFragment");
   // now we have associated this data we can link the shader
   ngl::ShaderLib::linkProgramObject("Phong");
   ngl::ShaderLib::use("Phong");
   // Now we will create a basic Camera from the graphics library
   // This is a static camera so it only needs to be set once
   // First create Values for the camera position
-  ngl::Vec3 from(0,0,20);
-  ngl::Vec3 to(0,0,0);
-  ngl::Vec3 up(0,1,0);
+  ngl::Vec3 from(0, 0, 20);
+  ngl::Vec3 to(0, 0, 0);
+  ngl::Vec3 up(0, 1, 0);
   // now load to our new camera
-  m_view=ngl::lookAt(from,to,up);
+  m_view = ngl::lookAt(from, to, up);
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
-  m_project=ngl::perspective(45.0f,static_cast<float>(width())/height(),0.05f,350.0f);
-  ngl::ShaderLib::setUniform("viewerPos",from);
+  m_project = ngl::perspective(45.0f, static_cast<float>(width()) / height(), 0.05f, 350.0f);
+  ngl::ShaderLib::setUniform("viewerPos", from);
 
-  ngl::Vec4 lightPos(2.0f,5.0f,2.0f,0.0f);
-  ngl::ShaderLib::setUniform("light.position",lightPos);
-  ngl::ShaderLib::setUniform("light.ambient",0.2f,0.2f,0.2f,1.0f);
-  ngl::ShaderLib::setUniform("light.diffuse",1.0f,1.0f,1.0f,1.0f);
-  ngl::ShaderLib::setUniform("light.specular",0.8f,0.8f,0.8f,1.0f);
+  ngl::Vec4 lightPos(2.0f, 5.0f, 2.0f, 0.0f);
+  ngl::ShaderLib::setUniform("light.position", lightPos);
+  ngl::ShaderLib::setUniform("light.ambient", 0.2f, 0.2f, 0.2f, 1.0f);
+  ngl::ShaderLib::setUniform("light.diffuse", 1.0f, 1.0f, 1.0f, 1.0f);
+  ngl::ShaderLib::setUniform("light.specular", 0.8f, 0.8f, 0.8f, 1.0f);
   // gold like phong material
-  ngl::ShaderLib::setUniform("material.ambient",0.274725f,0.1995f,0.0745f,0.0f);
-  ngl::ShaderLib::setUniform("material.diffuse",0.75164f,0.60648f,0.22648f,0.0f);
-  ngl::ShaderLib::setUniform("material.specular",0.628281f,0.555802f,0.3666065f,0.0f);
-  ngl::ShaderLib::setUniform("material.shininess",51.2f);
+  ngl::ShaderLib::setUniform("material.ambient", 0.274725f, 0.1995f, 0.0745f, 0.0f);
+  ngl::ShaderLib::setUniform("material.diffuse", 0.75164f, 0.60648f, 0.22648f, 0.0f);
+  ngl::ShaderLib::setUniform("material.specular", 0.628281f, 0.555802f, 0.3666065f, 0.0f);
+  ngl::ShaderLib::setUniform("material.shininess", 51.2f);
 
-  m_text=std::make_unique< ngl::Text>("fonts/Arial.ttf",16);
-  m_text->setColour(1,1,1);
-  m_text->setScreenSize(width(),height());
+  m_text = std::make_unique<ngl::Text>("fonts/Arial.ttf", 16);
+  m_text->setColour(1, 1, 1);
+  m_text->setScreenSize(width(), height());
   startTimer(20);
-
 }
-
 
 void NGLScene::loadMatricesToShader()
 {
@@ -96,147 +91,62 @@ void NGLScene::loadMatricesToShader()
   ngl::Mat4 MVP;
   ngl::Mat3 normalMatrix;
   ngl::Mat4 M;
-  M=m_transform.getMatrix();
-  MV=  m_view*M;
-  MVP=m_project*MV;
-  normalMatrix=MV;
+  M = m_transform.getMatrix();
+  MV = m_view * M;
+  MVP = m_project * MV;
+  normalMatrix = MV;
   normalMatrix.inverse().transpose();
-  ngl::ShaderLib::setUniform("MV",MV);
-  ngl::ShaderLib::setUniform("MVP",MVP);
-  ngl::ShaderLib::setUniform("normalMatrix",normalMatrix);
-  ngl::ShaderLib::setUniform("M",M);
+  ngl::ShaderLib::setUniform("MV", MV);
+  ngl::ShaderLib::setUniform("MVP", MVP);
+  ngl::ShaderLib::setUniform("normalMatrix", normalMatrix);
+  ngl::ShaderLib::setUniform("M", M);
 }
 
 void NGLScene::paintGL()
 {
   // clear the screen and depth buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glViewport(0,0,m_win.width,m_win.height);
+  glViewport(0, 0, m_win.width, m_win.height);
   ngl::ShaderLib::use("Phong");
 
-
-  static ngl::Vec3 start(-8,-5,0);
-  static ngl::Vec3 end(8,5,0);
+  static ngl::Vec3 start(-8, -5, 0);
+  static ngl::Vec3 end(8, 5, 0);
 
   // draw
-  ngl::Vec3 lpos=ngl::lerp(start,end,m_time);
+  ngl::Vec3 lpos = ngl::lerp(start, end, m_time);
   m_transform.setPosition(lpos);
   setMaterial(Material::GOLD);
 
   loadMatricesToShader();
   ngl::VAOPrimitives::draw("teapot");
 
-
-  ngl::Vec3 tpos=ngl::trigInterp(start,end,m_time);
-  tpos.m_y=tpos.m_y+2.0f;
+  ngl::Vec3 tpos = ngl::trigInterp(start, end, m_time);
+  tpos.m_y = tpos.m_y + 2.0f;
   m_transform.setPosition(tpos);
   setMaterial(Material::PEWTER);
 
   loadMatricesToShader();
   ngl::VAOPrimitives::draw("teapot");
 
-  ngl::Vec3  cpos=ngl::cubic(start,end,m_time);
-  cpos.m_y=cpos.m_y-2.0f;
+  ngl::Vec3 cpos = ngl::cubic(start, end, m_time);
+  cpos.m_y = cpos.m_y - 2.0f;
   m_transform.setPosition(cpos);
   setMaterial(Material::BRASS);
 
   loadMatricesToShader();
   ngl::VAOPrimitives::draw("teapot");
 
-  QString text=QString("T=%1").arg(m_time);
-  m_text->renderText(10,700,fmt::format("T={:0.2f}",m_time) );
-  m_text->renderText(10,680,fmt::format("Trigonomic interpolation [{:0.4f} {:0.4f} {:0.4f}]",tpos.m_x,tpos.m_y,tpos.m_z) );
-  // Note we can use QTextString to build string as well  
-  QTextStream(&text) << "Linear interpolation ["<<lpos.m_x<<','<<lpos.m_y<<','<<lpos.m_z<<']';
-  
-  
-  m_text->renderText(10,660,fmt::format("Linear interpolation [{:0.4f} {:0.4f} {:0.4f}]",lpos.m_x,lpos.m_y,lpos.m_z) );
+  QString text = QString("T=%1").arg(m_time);
+  m_text->renderText(10, 700, fmt::format("T={:0.2f}", m_time));
+  m_text->renderText(10, 680, fmt::format("Trigonomic interpolation [{:0.4f} {:0.4f} {:0.4f}]", tpos.m_x, tpos.m_y, tpos.m_z));
+  // Note we can use QTextString to build string as well
+  QTextStream(&text) << "Linear interpolation [" << lpos.m_x << ',' << lpos.m_y << ',' << lpos.m_z << ']';
 
-  m_text->renderText(10,640,fmt::format("Cubic interpolation [{:0.4f} {:0.4f} {:0.4f}]",cpos.m_x,cpos.m_y,cpos.m_z) );
+  m_text->renderText(10, 660, fmt::format("Linear interpolation [{:0.4f} {:0.4f} {:0.4f}]", lpos.m_x, lpos.m_y, lpos.m_z));
 
+  m_text->renderText(10, 640, fmt::format("Cubic interpolation [{:0.4f} {:0.4f} {:0.4f}]", cpos.m_x, cpos.m_y, cpos.m_z));
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mouseMoveEvent( QMouseEvent* _event )
-{
-  // note the method buttons() is the button state when event was called
-  // that is different from button() which is used to check which button was
-  // pressed when the mousePress/Release event is generated
-  if ( m_win.rotate && _event->buttons() == Qt::LeftButton )
-  {
-    int diffx = _event->x() - m_win.origX;
-    int diffy = _event->y() - m_win.origY;
-    m_win.spinXFace += static_cast<int>( 0.5f * diffy );
-    m_win.spinYFace += static_cast<int>( 0.5f * diffx );
-    m_win.origX = _event->x();
-    m_win.origY = _event->y();
-    update();
-  }
-  // right mouse translate code
-  else if ( m_win.translate && _event->buttons() == Qt::RightButton )
-  {
-    int diffX      = static_cast<int>( _event->x() - m_win.origXPos );
-    int diffY      = static_cast<int>( _event->y() - m_win.origYPos );
-    m_win.origXPos = _event->x();
-    m_win.origYPos = _event->y();
-    m_modelPos.m_x += INCREMENT * diffX;
-    m_modelPos.m_y -= INCREMENT * diffY;
-    update();
-  }
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mousePressEvent( QMouseEvent* _event )
-{
-  // that method is called when the mouse button is pressed in this case we
-  // store the value where the maouse was clicked (x,y) and set the Rotate flag to true
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.origX  = _event->x();
-    m_win.origY  = _event->y();
-    m_win.rotate = true;
-  }
-  // right mouse translate mode
-  else if ( _event->button() == Qt::RightButton )
-  {
-    m_win.origXPos  = _event->x();
-    m_win.origYPos  = _event->y();
-    m_win.translate = true;
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::mouseReleaseEvent( QMouseEvent* _event )
-{
-  // that event is called when the mouse button is released
-  // we then set Rotate to false
-  if ( _event->button() == Qt::LeftButton )
-  {
-    m_win.rotate = false;
-  }
-  // right mouse translate mode
-  if ( _event->button() == Qt::RightButton )
-  {
-    m_win.translate = false;
-  }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-void NGLScene::wheelEvent( QWheelEvent* _event )
-{
-
-  // check the diff of the wheel position (0 means no change)
-  if ( _event->angleDelta().x() > 0 )
-  {
-    m_modelPos.m_z += ZOOM;
-  }
-  else if ( _event->angleDelta().x() < 0 )
-  {
-    m_modelPos.m_z -= ZOOM;
-  }
-  update();
-}
 //----------------------------------------------------------------------------------------------------------------------
 
 void NGLScene::keyPressEvent(QKeyEvent *_event)
@@ -246,65 +156,73 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   switch (_event->key())
   {
   // escape key to quite
-  case Qt::Key_Escape : QGuiApplication::exit(EXIT_SUCCESS); break;
+  case Qt::Key_Escape:
+    QGuiApplication::exit(EXIT_SUCCESS);
+    break;
   // turn on wirframe rendering
-  case Qt::Key_W : glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); break;
+  case Qt::Key_W:
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    break;
   // turn off wire frame
-  case Qt::Key_S : glPolygonMode(GL_FRONT_AND_BACK,GL_FILL); break;
+  case Qt::Key_S:
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    break;
   // show full screen
-  case Qt::Key_F : showFullScreen(); break;
+  case Qt::Key_F:
+    showFullScreen();
+    break;
   // show windowed
-  case Qt::Key_N : showNormal(); break;
-  case Qt::Key_Space : m_animate^=true; break;
-  case Qt::Key_Left :
-      m_time-=0.01f;
-      if(m_time<0.0f)
-        m_time=0.0f;
-  break;
-  case Qt::Key_Right :
-      m_time+=0.01f;
-      if(m_time>1.0f)
-        m_time=1.0f;
-  break;
-  default : break;
-
+  case Qt::Key_N:
+    showNormal();
+    break;
+  case Qt::Key_Space:
+    m_animate ^= true;
+    break;
+  case Qt::Key_Left:
+    m_time -= 0.01f;
+    if (m_time < 0.0f)
+      m_time = 0.0f;
+    break;
+  case Qt::Key_Right:
+    m_time += 0.01f;
+    if (m_time > 1.0f)
+      m_time = 1.0f;
+    break;
+  default:
+    break;
   }
   // finally update the GLWindow and re-draw
-  //if (isExposed())
-    update();
+  // if (isExposed())
+  update();
 }
 
-void NGLScene::timerEvent( QTimerEvent *)
+void NGLScene::timerEvent(QTimerEvent *)
 {
-  if(m_animate==true)
+  if (m_animate == true)
   {
-    m_time+=0.01f;
-    if (m_time >=1.0f)
+    m_time += 0.01f;
+    if (m_time >= 1.0f)
     {
-      m_time=0.0f;
+      m_time = 0.0f;
     }
     update();
   }
 }
 
-
-
-
 void NGLScene::setMaterial(const Material &_m)
 {
-  const static float material[][10]={
-  { 0.274725f,0.1995f,0.0745f,0.75164f,0.60648f,0.22648f,0.628281f,
-    0.555802f,0.3666065f,51.2f}, // Gold
-  { 0.329412f,0.223529f,0.027451f,0.780392f,0.568627f,0.113725f,0.992157f,
-    0.941176f,0.807843f,27.8974f}, //Brass
-  { 0.10588f,0.058824f,0.113725f,0.427451f,0.470588f,0.541176f,
-    0.3333f,0.3333f,0.521569f,9.84615f} // Pewter
+  const static float material[][10] = {
+      {0.274725f, 0.1995f, 0.0745f, 0.75164f, 0.60648f, 0.22648f, 0.628281f,
+       0.555802f, 0.3666065f, 51.2f}, // Gold
+      {0.329412f, 0.223529f, 0.027451f, 0.780392f, 0.568627f, 0.113725f, 0.992157f,
+       0.941176f, 0.807843f, 27.8974f}, // Brass
+      {0.10588f, 0.058824f, 0.113725f, 0.427451f, 0.470588f, 0.541176f,
+       0.3333f, 0.3333f, 0.521569f, 9.84615f} // Pewter
   };
-  int i=static_cast<int>(_m);
+  int i = static_cast<int>(_m);
   ngl::ShaderLib::use("Phong");
-  ngl::ShaderLib::setUniform("material.ambient",material[i][0],material[i][1],material[i][2],1.0f);
-  ngl::ShaderLib::setUniform("material.diffuse",material[i][3],material[i][4],material[i][5],1.0f);
-  ngl::ShaderLib::setUniform("material.specular",material[i][6],material[i][7],material[i][8],1.0f);
-  ngl::ShaderLib::setUniform("material.shininess",material[i][9]);
-
+  ngl::ShaderLib::setUniform("material.ambient", material[i][0], material[i][1], material[i][2], 1.0f);
+  ngl::ShaderLib::setUniform("material.diffuse", material[i][3], material[i][4], material[i][5], 1.0f);
+  ngl::ShaderLib::setUniform("material.specular", material[i][6], material[i][7], material[i][8], 1.0f);
+  ngl::ShaderLib::setUniform("material.shininess", material[i][9]);
 }
