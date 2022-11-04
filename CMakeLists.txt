@@ -44,7 +44,7 @@ add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 # now add NGL specific values
 target_link_libraries(${TargetName} PRIVATE  NGL Qt::Widgets Qt::OpenGL)
 
-add_custom_target(CopyShaders ALL
+add_custom_target(${TargetName}CopyShaders ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/shaders
     $<TARGET_FILE_DIR:${TargetName}>/shaders
