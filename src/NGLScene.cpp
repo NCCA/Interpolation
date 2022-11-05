@@ -1,6 +1,7 @@
 #include <QMouseEvent>
 #include <QGuiApplication>
 #include <QFont>
+#include <QTextStream>
 #include "NGLScene.h"
 #include <ngl/Transformation.h>
 #include <ngl/NGLInit.h>
