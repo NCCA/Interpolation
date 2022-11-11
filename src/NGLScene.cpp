@@ -7,7 +7,7 @@
 #include <ngl/NGLInit.h>
 #include <ngl/VAOPrimitives.h>
 #include <ngl/ShaderLib.h>
-
+#include <iostream>
 NGLScene::NGLScene()
 {
   setTitle("Using the ngl::Util interpolation templates");
